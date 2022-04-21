@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1dd995b2-8c9a-451d-b215-26a85f8ad9d3" name="apirestpe" url="http://estudio57.net">
+        <fileTransfer host="estudio57.net" port="21" rootFolder="/public_html/apirestpe">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

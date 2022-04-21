@@ -1,0 +1,31 @@
+#Header add Access-Control-Allow-Origin '*'
+#Header add Access-Control-Allow-Methods 'GET,PUT,POST,DELETE'
+#Header add Access-Control-Allow-Headers 'Content-Type, Authorization'
+# Impedir que se pueda ver el listado de contenidos de un directorio
+
+Options All -Indexes
+
+# Url Amigables
+
+RewriteEngine On
+
+RewriteRule ^([-a-zA-Z0-9=_,/]+)$ index.php?ruta=$1
+
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
+#Header always set Access-Control-Allow-Origin '*'
+#Header always set Access-Control-Allow-Methods 'POST, GET, OPTIONS, DELETE, PUT'
+#Header always set Access-Control-Allow-Headers 'Content-Type'
+#
+## Impedir que se pueda ver el listado de contenidos de un directorio
+#Options All -Indexes
+#
+## Url Amigables
+#
+#RewriteEngine On
+#RewriteCond %{REQUEST_METHOD} OPTIONS
+#RewriteRule ^(.*)$ $1 [R=200,L]
+#
+#
+##RewriteRule ^([-a-zA-Z0-9=_,/]+)$ index.php?ruta=$1
+
