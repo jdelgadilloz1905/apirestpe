@@ -109,6 +109,60 @@ class ModelUsers{
 
     }
 
+    /*=============================================
+	ACTUALIZAR DATOS USER
+	=============================================*/
+
+    static public function mdlUpdateUserData($tabla, $datos){
+        try {
+
+            $stmt = Conexion::conectar()->prepare("UPDATE users SET 
+                                                                name = :name, 
+                                                                email = :email, 
+                                                                last = :last, 
+                                                                company =:company, 
+                                                                country = :country, 
+                                                                bio_text = :bio_text, 
+                                                                phone = :phone, 
+                                                                email_encriptado = :email_encriptado
+                                                                WHERE id = :id");
+
+            $stmt -> bindParam(":id", $datos["id"], PDO::PARAM_STR);
+            $stmt -> bindParam(":name", $datos["name"], PDO::PARAM_STR);
+            $stmt -> bindParam(":email", $datos["email"], PDO::PARAM_STR);
+            $stmt -> bindParam(":last", $datos["last"], PDO::PARAM_STR);
+            $stmt -> bindParam(":company", $datos["company"], PDO::PARAM_STR);
+            $stmt -> bindParam(":country", $datos["country"], PDO::PARAM_STR);
+            $stmt -> bindParam(":bio_text", $datos["bio_text"], PDO::PARAM_STR);
+            $stmt -> bindParam(":phone", $datos["phone"], PDO::PARAM_STR);
+            $stmt -> bindParam(":email_encriptado", $datos["email_encriptado"], PDO::PARAM_STR);
+
+
+
+            if($stmt -> execute()){
+
+                return "ok";
+
+            }else{
+
+                return "error";
+
+            }
+
+
+        }catch (PDOException $pe) {
+
+            return "Error occurred:" . $pe->getMessage();
+
+        }
+
+        $stmt -> close();
+
+        $stmt = null;
+
+    }
+
+
     /*============================================
        ACTUALIZAR PASSWORD
     ==============================================*/

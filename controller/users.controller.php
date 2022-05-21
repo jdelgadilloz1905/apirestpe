@@ -203,6 +203,51 @@ class ControllerUsers{
         }
 
     }
+    /*=============================================
+	ACTUALIZAR DATOS DE USUARIO
+	=============================================*/
+    static public function ctrUpdateUser($data){
+
+        if(isset($data["id"])) {
+
+            $encriptarEmail = md5($data["email"]);
+
+            $datos = array(
+                "id"=>$data["id"],
+                "name"=>$data["name"],
+                "email"=>$data["email"],
+                "last"=>$data["last"],
+                "company"=>$data["company"],
+                "country"=>$data["country"],
+                "bio_text"=>$data["bio_text"],
+                "phone"=>$data["phone"],
+                "email_encriptado"=>$encriptarEmail
+            );
+
+            $resp = ModelUsers::mdlUpdateUserData("users", $datos);
+
+            if($resp == "ok"){
+
+                $result = array(
+                    "statusCode" => 200,
+                    "error" => false,
+                    "mensaje" =>"Cambios actualizados correctamente",
+                );
+
+            }else{
+
+                $result = array(
+                    "statusCode" => 400,
+                    "error" => true,
+                    "mensaje" =>"¡Error actualizando, ". $resp,
+                );
+
+
+            }
+            //echo json_encode($datos,200);
+            echo json_encode($result,http_response_code($result["statusCode"]));
+        }
+    }
 
     /*=============================================
     VERIFICACION DE EMAIL DE CUENTA DIRECTA

@@ -68,6 +68,13 @@ switch ($method){
 
         break;
 
+    case "updateuser":
+
+        $respuesta = ControllerUsers::ctrUpdateUser($obj);
+
+        echo $respuesta;
+        break;
+
 
     default:
         echo json_encode(
