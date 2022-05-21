@@ -162,6 +162,49 @@ class ControllerUsers{
     }
 
     /*=============================================
+	ACTUALIZAR PASSWORD
+	=============================================*/
+
+    static public function ctrActualizarPassword($data){
+
+        if(isset($data["id"])) {
+
+            $passwordNuevo = crypt($data["newPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+            $fecha_actual = date("Y-m-d");
+
+            $datos = array(
+                "id"=>$data["id"],
+                "password_expiry_date"=>date("Y-m-d",strtotime($fecha_actual."+ 30 days")),
+                "password"=>$passwordNuevo
+            );
+            $resp = ModelUsers::mdlActualizarPassword("users", $datos);
+
+            if($resp == "ok"){
+
+                $result = array(
+                    "statusCode" => 200,
+                    "error" => false,
+                    "mensaje" =>"Excelente trabajo, Tu contraseña ha sido cambiada exitosamente.",
+                );
+
+            }else{
+
+               $result = array(
+                   "statusCode" => 400,
+                   "error" => true,
+                   "mensaje" =>"¡Error al cambiar su contraseña, contacte con el administrador!",
+               );
+
+
+            }
+            //echo json_encode($datos,200);
+            echo json_encode($result,http_response_code($result["statusCode"]));
+
+        }
+
+    }
+
+    /*=============================================
     VERIFICACION DE EMAIL DE CUENTA DIRECTA
     =============================================*/
 

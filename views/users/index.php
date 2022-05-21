@@ -60,6 +60,14 @@ switch ($method){
 
         break;
 
+    case "updatepassword":
+
+        $respuesta = ControllerUsers::ctrActualizarPassword($obj);
+
+        echo $respuesta;
+
+        break;
+
 
     default:
         echo json_encode(

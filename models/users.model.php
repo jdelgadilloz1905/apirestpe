@@ -109,5 +109,33 @@ class ModelUsers{
 
     }
 
+    /*============================================
+       ACTUALIZAR PASSWORD
+    ==============================================*/
+
+    static public function mdlActualizarPassword($tabla, $datos){
+
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET password = :password, password_expiry_date = :password_expiry_date WHERE id = :id");
+
+        $stmt -> bindParam(":id", $datos["id"], PDO::PARAM_INT);
+        $stmt -> bindParam(":password", $datos["password"], PDO::PARAM_STR);
+        $stmt -> bindParam(":password_expiry_date", $datos["password_expiry_date"], PDO::PARAM_STR);
+
+        if($stmt -> execute()){
+
+            return "ok";
+
+        }else{
+
+            return "error";
+
+        }
+
+        $stmt-> close();
+
+        $stmt = null;
+
+    }
+
 
 }
