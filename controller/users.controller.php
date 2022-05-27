@@ -5,6 +5,142 @@ class ControllerUsers{
     REGISTRO DE CUENTA DIRECTA
     =============================================*/
 
+    static public function ctrUserRegisterProfesional($data){
+
+        if (isset($data["email"])) {
+
+            $encriptarEmail = md5($data["email"]);
+
+            //codigo de verificacion
+            $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+            $code= strtoupper(substr(str_shuffle($permitted_chars), 0, 6));
+
+            $encriptar = crypt($code, '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+
+            $datos = array(
+                "name" => $data["name"],
+                "last" => $data["last"],
+                "email" => $data["email"],
+                "password"=>$encriptar,
+                "photo" => "",
+                "modo" => $data["modo"],
+                "profile"=> $data["profile"],
+                "phone"=> $data["phone"],
+                "company"=> $data["company"],
+                "country"=> $data["country"],
+                "code"=>$code,
+                "email_encriptado" => $encriptarEmail);
+
+            //ANTES REALIZO UNA VALIDACION SI EL USUARIO EXISTE NUEVAMENTE PARA EVITAR DUPLICIDAD
+            $result = self::ctrShowUsers("email",trim($data["email"])) ;
+
+            if(isset($result["email"])){
+
+                $json = array(
+                    "status" =>409,
+                    "result" => $result,
+                    "comment" =>"The email already exists in the database, please enter a different one!",
+                );
+
+                echo json_encode($json,http_response_code($json["status"]));
+
+                return;
+
+            }else{
+
+                $response = ModelUsers::mdlUserRegister("users", $datos);
+
+                $datosUser = self::ctrShowUsers("id",$response["lasId"]) ; //para el envio de email
+
+
+                if (isset($response["lasId"])) {
+
+                    /*=============================================
+                    VERIFICACIÓN CORREO ELECTRÓNICO
+                    =============================================*/
+                    //date_default_timezone_set("America/Bogota");
+
+
+                    $image_email= Ruta::ctrRutaLogoEmail();
+
+                    $codeVerification = $datosUser["code"];
+                    $name = $datosUser["name"]. " ". $datosUser["last"];
+
+                    $mail = new PHPMailer;
+
+                    $mail->CharSet = 'UTF-8';
+
+                    $mail->isMail();
+
+                    $mail->setFrom('hi@pe.com', 'PE');
+
+                    $mail->addReplyTo('hi@pe.com', 'PE');
+
+                    $mail->Subject = "Verification code";
+
+                    $mail->addAddress($datosUser["email"]);
+
+                    $mail->msgHTML('
+                                <div style="width:100%; background:#eee; position:relative; font-family:sans-serif; padding-bottom:40px">
+
+                                    <div style="position:relative; margin:auto; width:600px; background:white; padding:20px">
+
+                                        <center>
+
+                                            <img style="padding:20px; width:15%" src="'.$image_email.'">
+
+                                            <h3 style="font-weight:100; color:#999">VERIFY YOUR EMAIL ADDRESS</h3>
+
+                                            <hr style="border:1px solid #ccc; width:80%">
+
+                                            <h4 style="font-weight:100; color:#999; padding:0 20px">Hi : '.$name.'</h4>
+
+                                            <h4 style="font-weight:100; color:#999; padding:0 20px">Your verification code is: '.$codeVerification.'</h4>
+
+                                            <br>
+
+                                            <hr style="border:1px solid #ccc; width:80%">
+
+                                            <h5 style="font-weight:100; color:#999">If you have not signed up for this account, you can ignore this email and the account will be deleted.</h5>
+
+                                        </center>
+
+                                    </div>
+                                </div>'
+                    );
+
+                    $mail->Send();
+
+                    if (!$mail) {
+
+                        $json = array(
+                            "status" => 202,
+                            "result" => $result,
+                            "comment" =>"The process was successful. There was a problem sending email verification to " . $data["email"] . $mail->ErrorInfo . "!"
+                        );
+
+                        echo json_encode($json,http_response_code($json["status"]));
+
+                        return;
+
+                    }else{
+                        echo json_encode($response,http_response_code($response["status"]));
+
+                        return;
+                    }
+
+                }
+
+
+
+            }
+
+        }
+
+
+    }
+
     static public function ctrUserRegister($data){
 
         if (isset($data["email"])) {
@@ -38,7 +174,7 @@ class ControllerUsers{
             if(isset($result["email"])){
 
                 $json = array(
-                    "status" =>404,
+                    "status" =>409,
                     "result" => $result,
                     "comment" =>"The email already exists in the database, please enter a different one!",
                 );
@@ -85,13 +221,13 @@ class ControllerUsers{
                     VERIFICACIÓN CORREO ELECTRÓNICO
                     =============================================*/
 
-                    date_default_timezone_set("America/Bogota");
+                    //date_default_timezone_set("America/Bogota");
 
 
-                    $image_email= Ruta::ctrRutaLogoEmail();
+                    $image_email = Ruta::ctrRutaLogoEmail();
 
                     $codeVerification = $datosUser["code"];
-                    $name = $datosUser["name"]. " ". $datosUser["last"];
+                    $name = $datosUser["name"] . " " . $datosUser["last"];
 
                     $mail = new PHPMailer;
 
@@ -114,15 +250,15 @@ class ControllerUsers{
 
                                         <center>
 
-                                            <img style="padding:20px; width:15%" src="'.$image_email.'">
+                                            <img style="padding:20px; width:15%" src="' . $image_email . '">
 
-                                            <h3 style="font-weight:100; color:#999">VERIFY YOUR EMAIL ADDRESSO</h3>
+                                            <h3 style="font-weight:100; color:#999">VERIFY YOUR EMAIL ADDRESS</h3>
 
                                             <hr style="border:1px solid #ccc; width:80%">
-                                            
-                                            <h4 style="font-weight:100; color:#999; padding:0 20px">Hi : '.$name.'</h4>
 
-                                            <h4 style="font-weight:100; color:#999; padding:0 20px">Your verification code is: '.$codeVerification.'</h4>
+                                            <h4 style="font-weight:100; color:#999; padding:0 20px">Hi : ' . $name . '</h4>
+
+                                            <h4 style="font-weight:100; color:#999; padding:0 20px">Your verification code is: ' . $codeVerification . '</h4>
 
                                             <br>
 
@@ -138,28 +274,70 @@ class ControllerUsers{
 
                     $mail->Send();
 
-//                    if (!$envio) {
-//
-//                        $response = array(
-//                            "statusCode" => 400,
-//                            "error" => false,
-//                            "mensaje" =>"There was a problem sending email verification to " . $data["email"] . $mail->ErrorInfo . "!"
-//                        );
-//
-//                    }
+                    if (!$mail) {
 
+                        $json = array(
+                            "status" => 202,
+                            "result" => $result,
+                            "comment" => "The process was successful. There was a problem sending email verification to " . $data["email"] . $mail->ErrorInfo . "!"
+                        );
+
+                        echo json_encode($json, http_response_code($json["status"]));
+
+                        return;
+
+                    } else {
+                        echo json_encode($response, http_response_code($response["status"]));
+
+                        return;
+                    }
                 }
-
-                echo json_encode($response,http_response_code($response["status"]));
-
-                return;
-
             }
 
         }
 
 
     }
+
+    /*===============================================
+   REGISTRAR FORMULARIO
+   =================================================*/
+
+    static public function ctrRegisterAnswersUser($data){
+
+        $datos = array(
+            "id_user" => $data["id_user"],
+            "step_one" => $data["step_one"],
+            "step_two" => $data["step_two"],
+            "step_three" => $data["step_three"],
+            "step_four" => $data["step_four"],
+            "step_five" => $data["step_five"],
+            "step_six" => $data["step_six"],
+            "step_seven" => $data["step_seven"],
+            "step_eight" => $data["step_eight"],
+            "step_nine" => $data["step_nine"],
+            "step_ten" => $data["step_ten"],
+            "step_eleven" => $data["step_eleven"],
+            "step_twelve" => $data["step_twelve"],
+            "step_thirteen" => $data["step_thirteen"],
+            "step_fourteen" => $data["step_fourteen"],
+            "step_fifteen" => $data["step_fifteen"],
+            "step_sixteen" => $data["step_sixteen"],
+            "step_sixteen2" => isset($data["step_sixteen2"]) ? $data["step_sixteen2"] : "",
+            "step_seventen" => $data["step_seventen"],
+            "step_eighteen" => $data["step_eighteen"],
+            "step_nineteen" => $data["step_nineteen"]
+        );
+
+        $response = ModelUsers::mdlUserRegister("answers", $datos);
+
+        if (isset($response["lasId"])) {
+
+            self::fncResponse($response);
+        }
+    }
+
+
 
     /*=============================================
 	ACTUALIZAR PASSWORD
@@ -189,11 +367,11 @@ class ControllerUsers{
 
             }else{
 
-               $result = array(
-                   "statusCode" => 400,
-                   "error" => true,
-                   "mensaje" =>"¡Error al cambiar su contraseña, contacte con el administrador!",
-               );
+                $result = array(
+                    "statusCode" => 400,
+                    "error" => true,
+                    "mensaje" =>"¡Error al cambiar su contraseña, contacte con el administrador!",
+                );
 
 
             }
@@ -658,44 +836,6 @@ class ControllerUsers{
         }
         echo json_encode($json,http_response_code($json["status"]) );
         return;
-    }
-
-    /*===============================================
-    REGISTRAR FORMULARIO
-    =================================================*/
-
-    static public function ctrRegisterAnswersUser($data){
-
-        $datos = array(
-            "id_user" => $data["id_user"],
-            "step_one" => $data["step_one"],
-            "step_two" => $data["step_two"],
-            "step_three" => $data["step_three"],
-            "step_four" => $data["step_four"],
-            "step_five" => $data["step_five"],
-            "step_six" => $data["step_six"],
-            "step_seven" => $data["step_seven"],
-            "step_eight" => $data["step_eight"],
-            "step_nine" => $data["step_nine"],
-            "step_ten" => $data["step_ten"],
-            "step_eleven" => $data["step_eleven"],
-            "step_twelve" => $data["step_twelve"],
-            "step_thirteen" => $data["step_thirteen"],
-            "step_fourteen" => $data["step_fourteen"],
-            "step_fifteen" => $data["step_fifteen"],
-            "step_sixteen" => $data["step_sixteen"],
-            "step_sixteen2" => isset($data["step_sixteen2"]) ? $data["step_sixteen2"] : "",
-            "step_seventen" => $data["step_seventen"],
-            "step_eighteen" => $data["step_eighteen"],
-            "step_nineteen" => $data["step_nineteen"]
-        );
-
-        $response = ModelUsers::mdlUserRegister("answers", $datos);
-
-        if (isset($response["lasId"])) {
-
-            self::fncResponse($response);
-        }
     }
 
 
