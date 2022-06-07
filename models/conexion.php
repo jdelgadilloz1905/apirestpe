@@ -1,22 +1,22 @@
-<?php
-
-class Conexion{
-
-	static public function conectar(){
-
-
-        $link = new PDO("mysql:host=localhost;dbname=estudio5_pe",
-			"root",
-			"",
-			array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-				PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-		);
-		
-
-		return $link;
-
-	}
-
-
-
+<?php
+
+class Conexion{
+
+	static public function conectar(){
+
+
+        $link = new PDO("mysql:host=localhost;dbname=estudio5_pe",
+			"estudio5_pe_web",
+			"q1~h=GEh^g2v",
+			array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+				PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+		);
+		
+
+		return $link;
+
+	}
+
+
+
 }
